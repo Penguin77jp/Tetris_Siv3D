@@ -119,7 +119,7 @@ int main(int, char**) {
 
 constexpr int WINDOW_WIDTH = 1920;
 constexpr int WINDOW_HEIGHT = 1080;
-constexpr float TEXTURE_SIZE = 0.5f;
+constexpr float TEXTURE_SIZE = 0.25f;
 constexpr int TEXTURE_WIDTH = WINDOW_WIDTH * TEXTURE_SIZE;
 constexpr int TEXTURE_HEIGHT = WINDOW_HEIGHT * TEXTURE_SIZE;
 
@@ -127,18 +127,10 @@ void Main()
 {
   // 背景を水色にする
   Scene::SetBackground(ColorF(0.8, 0.9, 1.0));
-  Window::Resize(WINDOW_WIDTH,WINDOW_HEIGHT);
+  Window::Resize(WINDOW_WIDTH, WINDOW_HEIGHT);
 
   // 大きさ 60 のフォントを用意
   const Font font(60);
-
-  // 猫のテクスチャを用意
-  Texture cat(Emoji(U"🐈"));
-  const int window_x = 50, window_y = 50;
-
-  // 猫の座標
-  Vec2 catPos(640, 450);
-
 
   //game scene
   namespace pScene = png::scene;
@@ -164,10 +156,7 @@ void Main()
   while (System::Update())
   {
     // テキストを画面の中心に描く
-    font(U"Hello, Siv3D!🐣{}"_fmt(1.0f/Scene::DeltaTime())).drawAt(Scene::Center(), Palette::Black);
-
-    // 大きさをアニメーションさせて猫を表示する
-    cat.resized(100 + Periodic::Sine0_1(1s) * 20).drawAt(catPos);
+    font(U"Hello, Siv3D!🐣{}"_fmt(1.0f / Scene::DeltaTime())).drawAt(Scene::Center(), Palette::Black);
 
     // マウスカーソルに追従する半透明の赤い円を描く
     Circle(Cursor::Pos(), 40).draw(ColorF(1, 0, 0, 0.5));
@@ -179,21 +168,26 @@ void Main()
       Print << U"Hello!";
     }
 
-    // ボタンが押されたら
-    if (SimpleGUI::Button(U"Move the cat", Vec2(600, 20)))
-    {
-      // 猫の座標を画面内のランダムな位置に移動する
-      catPos = RandomVec2(Scene::Rect());
-    }
-
-    if (gameScene.isUpdateScene()) {
+    if (gameScene.isUpdateScene(5)) {
       gameScene.GetEmbreeRenderScene(scene);
       delete renderer;
       renderer = new png::Renderer(TEXTURE_WIDTH, TEXTURE_HEIGHT, scene);
     }
-    renderer->Draw(gameScene.GetCamera());
-    texture.fill(renderer->ResultImage());
-    texture.draw();
+    //renderer->Draw(gameScene.GetCamera());
+    //texture.fill(renderer->ResultImage());
+    //texture.scaled(1.0f/TEXTURE_SIZE).draw();
+
+    //tetris
+    auto box = gameScene.GetBox();
+    float scale = 70;
+    float size = 50;
+    for (int i = 0; i < box.size(); ++i) {
+      Rect(WINDOW_WIDTH / 2 + box[i].x * scale
+        , WINDOW_HEIGHT / 2 - box[i].y * scale
+        , size
+        , size
+      ).draw();
+    }
   }
 }
 

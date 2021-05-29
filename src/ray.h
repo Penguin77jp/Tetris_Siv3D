@@ -8,7 +8,7 @@ namespace png {
   public:
     float x, y, z;
     vec3() :x(0), y(0), z(0) {}
-    vec3(float x, float y, float z) :x(x), y(y), z(z) {}
+    vec3(float x = 0.0f, float y = 0.0f, float z = 0.0f) :x(x), y(y), z(z) {}
     vec3(const vec3& a) : x(a.x), y(a.y), z(a.z) {}
 
     //operator

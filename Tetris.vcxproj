@@ -250,6 +250,7 @@
     <ClInclude Include="src\gameScene.h" />
     <ClInclude Include="src\gameText.h" />
     <ClInclude Include="src\material.h" />
+    <ClInclude Include="src\mino.h" />
     <ClInclude Include="src\random.h" />
     <ClInclude Include="src\ray.h" />
     <ClInclude Include="src\renderer.h" />
