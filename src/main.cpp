@@ -1,4 +1,4 @@
-﻿#include "ray.h"
+#include "ray.h"
 #include "gui.h"
 #include "random.h"
 #include "texture.h"
@@ -6,6 +6,8 @@
 #include "renderer.h"
 #include "renderTarget.h"
 #include "gameScene.h"
+#include "mino.h"
+#include "controller.h"
 
 #include <iostream>
 
@@ -144,8 +146,10 @@ void Main()
       png::vec3{+0.0f,+0.0f,+0.0f},
       0.5,
       png::vec3{+0.0f,+1.0f,+0.0f},
-    }
-  );
+    },
+    1,
+    png::tetris::Controller()
+    );
   gameScene.InitEmbreeRenderScene(scene);
 
   //auto renderTarget = png::RenderTarget(TEXTURE_WIDTH, TEXTURE_HEIGHT);
@@ -161,14 +165,7 @@ void Main()
     // マウスカーソルに追従する半透明の赤い円を描く
     Circle(Cursor::Pos(), 40).draw(ColorF(1, 0, 0, 0.5));
 
-    // [A] キーが押されたら
-    if (KeyA.down())
-    {
-      // Hello とデバッグ表示する
-      Print << U"Hello!";
-    }
-
-    if (gameScene.isUpdateScene(5)) {
+    if (gameScene.isUpdateScene()) {
       gameScene.GetEmbreeRenderScene(scene);
       delete renderer;
       renderer = new png::Renderer(TEXTURE_WIDTH, TEXTURE_HEIGHT, scene);
@@ -178,12 +175,13 @@ void Main()
     //texture.scaled(1.0f/TEXTURE_SIZE).draw();
 
     //tetris
-    auto box = gameScene.GetBox();
+    auto box = png::tetris::TetrisPosition2vec3(gameScene.GetBox());
     float scale = 70;
     float size = 50;
     for (int i = 0; i < box.size(); ++i) {
-      Rect(WINDOW_WIDTH / 2 + box[i].x * scale
-        , WINDOW_HEIGHT / 2 - box[i].y * scale
+      Rect(
+        (box[i].x - png::tetris::TETRIS_WIDTH / 2) * scale + WINDOW_WIDTH / 2
+        , -(box[i].y - png::tetris::TETRIS_HEIGHT / 2) * scale + WINDOW_HEIGHT / 2
         , size
         , size
       ).draw();

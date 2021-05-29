@@ -1,55 +1,36 @@
 #pragma once
 
-#include "ray.h"
 #include "gameScene.h"
 
+#include <array>
 #include <vector>
+
+class Field;
 
 namespace png {
   namespace tetris {
+    // x : 0 -> TETRIS_WIDTH
+    // y : 0 -> TETRIS_HEIGHT
     struct TetrisPosition {
-      TetrisPosition& operator+ (const TetrisPosition& a) {
-        return TetrisPosition(this->x + a.x, this->y + a.y);
-      }
-      TetrisPosition& operator= (const TetrisPosition& a) {
-        this->x = a.x;
-        this->y = a.y;
-        return *this;
-      }
-      TetrisPosition& operator+= (const TetrisPosition& a) {
-        this->x += a.x;
-        this->y += a.y;
-        return *this;
-      }
+      TetrisPosition operator+ (const TetrisPosition& a);
+      TetrisPosition operator= (const TetrisPosition& a);
+      TetrisPosition& operator+= (const TetrisPosition& a);
 
       int x, y;
     };
 
+    std::vector<vec3> TetrisPosition2vec3(const std::vector<TetrisPosition>& ref);
+
+
     class Mino {
     public:
-      Mino(int type) {
-        if (true) {
-          blockLocalPosi.push_back(TetrisPosition(-1.0, +0.0));
-          blockLocalPosi.push_back(TetrisPosition(+0.0, +0.0));
-          blockLocalPosi.push_back(TetrisPosition(+1.0, +0.0));
-          blockLocalPosi.push_back(TetrisPosition(+0.0, +1.0));
-        }
-      }
+      Mino(int type);
 
-      void SetPosi(TetrisPosition movingPosi) {
-        posi += movingPosi;
-      }
+      std::vector<TetrisPosition> GetPosi();
 
-      bool Movable(const scene::Field& field, TetrisPosition movingPosi) {
-        auto tmpPosi = posi + movingPosi;
-        for (int i = 0; i < blockLocalPosi.size(); ++i) {
-          auto checkPosi = blockLocalPosi[i] + tmpPosi;
-          if (field[checkPosi.x][checkPosi.y]) {
-            return false;
-          }
-        }
-        return true;
-      }
+      void Move(TetrisPosition movingPosi);
+
+      bool Movable(Field field, TetrisPosition movingPosi);
     private:
       std::vector<TetrisPosition> blockLocalPosi;
       TetrisPosition posi;
