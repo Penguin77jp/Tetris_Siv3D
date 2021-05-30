@@ -8,6 +8,7 @@ namespace png {
     public:
       Controller() {}
 
+      //move
       bool InputDown() {
         return KeyS.down();
       }
@@ -19,6 +20,13 @@ namespace png {
       }
       bool InputLeft() {
         return KeyA.down();
+      }
+      //rotate
+      bool InputRotateClockwise() {
+        return KeyE.down();
+      }
+      bool InputRotateCounterClockwise() {
+        return KeyQ.down();
       }
     private :
     };

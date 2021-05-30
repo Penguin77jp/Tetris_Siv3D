@@ -12,7 +12,7 @@ namespace png {
     // x : 0 -> TETRIS_WIDTH
     // y : 0 -> TETRIS_HEIGHT
     struct TetrisPosition {
-      TetrisPosition operator+ (const TetrisPosition& a);
+      TetrisPosition operator+ (const TetrisPosition& a)const;
       TetrisPosition operator= (const TetrisPosition& a);
       TetrisPosition& operator+= (const TetrisPosition& a);
 
@@ -26,11 +26,13 @@ namespace png {
     public:
       Mino(int type);
 
-      std::vector<TetrisPosition> GetPosi();
+      std::vector<TetrisPosition> GetPosi() const;
 
       void Move(TetrisPosition movingPosi);
-
-      bool Movable(Field field, TetrisPosition movingPosi);
+      void RotateClockwise();
+      void RotateCounterClockwise();
+      bool Movable(const Field& field, TetrisPosition movingPosi) const;
+      bool Rotatable(const Field& field, bool isClockwise) const;
     private:
       std::vector<TetrisPosition> blockLocalPosi;
       TetrisPosition posi;

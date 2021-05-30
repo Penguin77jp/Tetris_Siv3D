@@ -33,15 +33,20 @@ namespace png {
 
 
 
-    GameScene::GameScene(const Camera& _cam, int _updatingTimeFrequency, tetris::Controller _cont)
+    GameScene::GameScene(const Camera& _cam, float _updatingTimeFrequency, tetris::Controller _cont)
       : updatingTimeFrequency(_updatingTimeFrequency)
-      , startTime(std::chrono::system_clock::now())
+      , deltaTime(std::chrono::system_clock::now())
       , BaseScene(_cam)
       , handlingMino(NULL)
       , controller(_cont) {
-      for (int y = 0; y < TETRIS_HEIGHT; ++y) {
-        for (int x = 0; x < TETRIS_WIDTH; ++x) {
-          grid[y][x] = false;
+      for (int y = 0; y <= TETRIS_HEIGHT; ++y) {
+        for (int x = 0; x <= TETRIS_WIDTH; ++x) {
+          if (x == 0 || x == TETRIS_WIDTH || y == 0) {
+            grid[y][x] = true;
+          }
+          else {
+            grid[y][x] = false;
+          }
         }
       }
     }
@@ -102,29 +107,42 @@ namespace png {
         handlingMino = new Mino(0);
       }
       else {
-        if (controller.InputDown() && handlingMino->Movable(grid, png::tetris::TetrisPosition(0, -1))) {
-          handlingMino->Move(png::tetris::TetrisPosition(0, -1));
+        if (controller.InputDown() || isUpdateScene()) {
+          if (handlingMino->Movable(grid, png::tetris::TetrisPosition(0, -1))) {
+            handlingMino->Move(png::tetris::TetrisPosition(0, -1));
+          }
+          else {
+            auto tmpPosi = handlingMino->GetPosi();
+            for (int i = 0; i < tmpPosi.size(); ++i) {
+              grid[tmpPosi[i].y][tmpPosi[i].x] = true;
+            }
+            delete handlingMino;
+            handlingMino = NULL;
+          }
         }
-        else if (controller.InputRight()) {
+        else if (controller.InputRight() && handlingMino->Movable(grid, png::tetris::TetrisPosition(1, 0))) {
           handlingMino->Move(png::tetris::TetrisPosition(1, 0));
         }
+        else if (controller.InputLeft() && handlingMino->Movable(grid, png::tetris::TetrisPosition(-1, 0))) {
+          handlingMino->Move(png::tetris::TetrisPosition(-1, 0));
+        }
+        else if (controller.InputRotateClockwise() && handlingMino->Rotatable(grid, true)) {
+          handlingMino->RotateClockwise();
+        }
+        else if (controller.InputRotateCounterClockwise() && handlingMino->Rotatable(grid, false)) {
+          handlingMino->RotateCounterClockwise();
+        }
       }
 
-      //futi
-      {
-        //tate
-        for (int i = 0; i <= TETRIS_HEIGHT; ++i) {
-          vec.push_back(TetrisPosition(0, i));
-          vec.push_back(TetrisPosition(TETRIS_WIDTH, i));
-        }
-        // yoko
-        for (int i = 1; i <= TETRIS_WIDTH; ++i) {
-          vec.push_back(TetrisPosition(i, 0));
-        }
-      }
       //grid
       {
-
+        for (int y = 0; y < grid.size(); ++y) {
+          for (int x = 0; x < grid[0].size(); ++x) {
+            if (grid[y][x]) {
+              vec.push_back(TetrisPosition(x, y));
+            }
+          }
+        }
       }
       // handlingMino
       {
@@ -139,15 +157,17 @@ namespace png {
     }
 
     bool GameScene::isUpdateScene() {
-      if (ElapsedSec() < updatingTimeFrequency) {
-        startTime = std::chrono::system_clock::now();
+      if (ElapsedSec() >= updatingTimeFrequency) {
+        deltaTime = std::chrono::system_clock::now();
         return true;
       }
       return false;
     }
 
     int GameScene::ElapsedSec() const {
-      auto time = (int)std::chrono::duration_cast<std::chrono::seconds>(std::chrono::system_clock::now() - startTime).count();
+      auto time = (int)std::chrono::duration_cast<std::chrono::seconds>(std::chrono::system_clock::now() - deltaTime).count();
+      ClearPrint();
+      Print << U"{}"_fmt(time);
       return time;
     }
   }

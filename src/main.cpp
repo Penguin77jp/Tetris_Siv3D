@@ -147,7 +147,7 @@ void Main()
       0.5,
       png::vec3{+0.0f,+1.0f,+0.0f},
     },
-    1,
+    5,
     png::tetris::Controller()
     );
   gameScene.InitEmbreeRenderScene(scene);
