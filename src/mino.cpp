@@ -29,8 +29,45 @@ namespace png {
 
 		Mino::Mino(int type)
 			: blockLocalPosi(std::vector<TetrisPosition>())
-			, posi(TetrisPosition(TETRIS_WIDTH / 2, TETRIS_HEIGHT - 2)) {
-			if (true) {
+			, posi(TetrisPosition(TETRIS_WIDTH / 2, TETRIS_HEIGHT - 2))
+			, minoType(type) {
+			if (minoType == 0) {
+				blockLocalPosi.push_back(TetrisPosition(-1.0, +0.0));
+				blockLocalPosi.push_back(TetrisPosition(+0.0, +0.0));
+				blockLocalPosi.push_back(TetrisPosition(+1.0, +0.0));
+				blockLocalPosi.push_back(TetrisPosition(+2.0, +0.0));
+			}
+			else if (minoType == 1) {
+				blockLocalPosi.push_back(TetrisPosition(+0.0, +0.0));
+				blockLocalPosi.push_back(TetrisPosition(+1.0, +0.0));
+				blockLocalPosi.push_back(TetrisPosition(+0.0, +1.0));
+				blockLocalPosi.push_back(TetrisPosition(+1.0, +1.0));
+			}
+			else if (minoType == 2) {
+				blockLocalPosi.push_back(TetrisPosition(+0.0, +0.0));
+				blockLocalPosi.push_back(TetrisPosition(+1.0, +0.0));
+				blockLocalPosi.push_back(TetrisPosition(+0.0, -1.0));
+				blockLocalPosi.push_back(TetrisPosition(-1.0, -1.0));
+			}
+			else if (minoType == 3) {
+				blockLocalPosi.push_back(TetrisPosition(+0.0, +0.0));
+				blockLocalPosi.push_back(TetrisPosition(-1.0, +0.0));
+				blockLocalPosi.push_back(TetrisPosition(+0.0, -1.0));
+				blockLocalPosi.push_back(TetrisPosition(+1.0, -1.0));
+			}
+			else if (minoType == 4) {
+				blockLocalPosi.push_back(TetrisPosition(+0.0, +0.0));
+				blockLocalPosi.push_back(TetrisPosition(+0.0, +1.0));
+				blockLocalPosi.push_back(TetrisPosition(+1.0, +0.0));
+				blockLocalPosi.push_back(TetrisPosition(+2.0, +0.0));
+			}
+			else if (minoType == 5) {
+				blockLocalPosi.push_back(TetrisPosition(+0.0, +0.0));
+				blockLocalPosi.push_back(TetrisPosition(+1.0, +0.0));
+				blockLocalPosi.push_back(TetrisPosition(-1.0, +0.0));
+				blockLocalPosi.push_back(TetrisPosition(-2.0, +0.0));
+			}
+			else if (minoType == 6) {
 				blockLocalPosi.push_back(TetrisPosition(-1.0, +0.0));
 				blockLocalPosi.push_back(TetrisPosition(+0.0, +0.0));
 				blockLocalPosi.push_back(TetrisPosition(+1.0, +0.0));

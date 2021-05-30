@@ -36,6 +36,7 @@ namespace png {
     private:
       std::vector<TetrisPosition> blockLocalPosi;
       TetrisPosition posi;
+      int minoType;
     };
   }
 }
