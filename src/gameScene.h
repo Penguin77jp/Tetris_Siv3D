@@ -14,7 +14,7 @@ namespace png {
     class Mino;
     struct TetrisPosition;
     constexpr unsigned int TETRIS_WIDTH = 10;
-    constexpr unsigned int TETRIS_HEIGHT = 10;
+    constexpr unsigned int TETRIS_HEIGHT = 20;
     //Field[ y ][ x ]
     using Field = std::array<std::array<bool, (TETRIS_WIDTH + 2)>, (TETRIS_HEIGHT + 1)>;
   }

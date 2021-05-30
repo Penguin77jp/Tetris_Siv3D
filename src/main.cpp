@@ -176,8 +176,8 @@ void Main()
 
     //tetris
     auto box = png::tetris::TetrisPosition2vec3(gameScene.GetBox());
-    float scale = 70;
-    float size = 50;
+    float scale = 40;
+    float size = scale - 20;
     for (int i = 0; i < box.size(); ++i) {
       Rect(
         (box[i].x - png::tetris::TETRIS_WIDTH / 2) * scale + WINDOW_WIDTH / 2
