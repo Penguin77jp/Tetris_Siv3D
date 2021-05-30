@@ -148,7 +148,7 @@ namespace png {
     int polygonCounter;
   public:
     std::vector<std::shared_ptr<EmbreeRenderObject>> list;
-    SceneLight sceneLight;
+    SceneLight* sceneLight;
     EmbreeRenderScene() : polygonCounter(0) {}
 
     void GetVertex(std::vector<vec3>& geometryList, std::vector<std::vector<unsigned int>>& polygonIndex) {

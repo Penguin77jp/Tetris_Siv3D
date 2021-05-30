@@ -1,15 +1,15 @@
 #pragma once
 #include "texture.h"
 
-//#define STB_IMAGE_IMPLEMENTATION
-//#include <stb_image.h>
+#define STB_IMAGE_IMPLEMENTATION
+#include <stb_image.h>
 //#define STB_IMAGE_WRITE_IMPLEMENTATION
 //#include <stb_image_write.h>
 #include <iostream>
 #include <algorithm>
 
 png::Texture::Texture(const char* fileName) {
-  //image_data = stbi_load(fileName, &width, &height, &bpp, 0);
+  image_data = stbi_load(fileName, &width, &height, &bpp, 0);
   std::cout << width << " , " << height << " , " << bpp << std::endl;
 }
 

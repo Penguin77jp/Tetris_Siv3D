@@ -22,39 +22,39 @@ void Init_NiceScene(png::EmbreeRenderScene& scene) {
 
   //box
   {
-	png::Material* tmp_mat = new png::MaterialReflect(png::vec3{ 1.0f,1.0f,1.0f }, 0.05f, 0.0f);
-	scene.list.emplace_back(std::make_shared<Box>(
-	  Box{ png::vec3{+00.0f,-25,+00.0f}, tmp_mat ,25.0f }));
+  png::Material* tmp_mat = new png::MaterialReflect(png::vec3{ 1.0f,1.0f,1.0f }, 0.05f, 0.0f);
+  scene.list.emplace_back(std::make_shared<Box>(
+    Box{ png::vec3{+00.0f,-25,+00.0f}, tmp_mat ,25.0f }));
   }
 
   scene.sceneLight = png::SceneLight(
-	new png::Texture("private src/601265265.835475.jpg")
-	//new png::Texture("private src/601265293.010277.jpg")
+  new png::Texture("private src/601265265.835475.jpg")
+  //new png::Texture("private src/601265293.010277.jpg")
   );
 }
 
 void TestScene(png::EmbreeRenderScene& scene) {
   using namespace png;
   if (true) {
-	scene.list.emplace_back(std::make_shared<Triangle>(Triangle{
-	  vec3{-1.0f,+0.0f,+0.0f},
-	  vec3{+1.0f,+0.0f,+0.0f},
-	  vec3{+0.0f,+2.0f,+0.0f},
-	  new MaterialReflect(vec3{1.0f,0.1f,0.1f},0.7f,0.0f) }));
+  scene.list.emplace_back(std::make_shared<Triangle>(Triangle{
+    vec3{-1.0f,+0.0f,+0.0f},
+    vec3{+1.0f,+0.0f,+0.0f},
+    vec3{+0.0f,+2.0f,+0.0f},
+    new MaterialReflect(vec3{1.0f,0.1f,0.1f},0.7f,0.0f) }));
   }
   if (true) {
-	scene.list.emplace_back(std::make_shared<Triangle>(Triangle{
-	  vec3{-1.0f,-1.0f,+0.0f},
-	  vec3{+1.0f,-1.0f,+0.0f},
-	  vec3{+0.0f,-2.0f,+0.0f},
-	  new MaterialReflect(vec3{0.2f,1.0f,0.2f},0.7f,0.0f) }));
+  scene.list.emplace_back(std::make_shared<Triangle>(Triangle{
+    vec3{-1.0f,-1.0f,+0.0f},
+    vec3{+1.0f,-1.0f,+0.0f},
+    vec3{+0.0f,-2.0f,+0.0f},
+    new MaterialReflect(vec3{0.2f,1.0f,0.2f},0.7f,0.0f) }));
   }
 
   auto light = new png::vec3(1.0, 1.0, 1.0);
   scene.sceneLight = png::SceneLight(
-	light, 1.0
-	//new png::Texture("private src/601265265.83547A5.jpg")
-	//new png::Texture("private src/601265293.010277.jpg")
+  light, 1.0
+  //new png::Texture("private src/601265265.83547A5.jpg")
+  //new png::Texture("private src/601265293.010277.jpg")
   );
 }
 
@@ -73,23 +73,23 @@ int main(int, char**) {
   //TestScene(scene);
   //Init_NiceScene(scene);
   pScene::StaticScene  staticScene(
-	png::Camera{
-	  0,
-	  png::vec3{-2.6f,+0.5f,+2.6f},
-	  png::vec3{+0.0f,+0.0f,+0.0f},
-	  0.726,
-	  png::vec3{+0.0f,+1.0f,+0.0f},
-	},
-	scene);
+  png::Camera{
+    0,
+    png::vec3{-2.6f,+0.5f,+2.6f},
+    png::vec3{+0.0f,+0.0f,+0.0f},
+    0.726,
+    png::vec3{+0.0f,+1.0f,+0.0f},
+  },
+  scene);
 
   pScene::GameScene gameScene(
-	png::Camera{
-	  0,
-	  png::vec3{+0.0f,+2.0f,-20.0f},
-	  png::vec3{+0.0f,+0.0f,+0.0f},
-	  0.5,
-	  png::vec3{+0.0f,+1.0f,+0.0f},
-	}
+  png::Camera{
+    0,
+    png::vec3{+0.0f,+2.0f,-20.0f},
+    png::vec3{+0.0f,+0.0f,+0.0f},
+    0.5,
+    png::vec3{+0.0f,+1.0f,+0.0f},
+  }
   );
   gameScene.InitEmbreeRenderScene(scene);
 
@@ -101,15 +101,15 @@ int main(int, char**) {
   //png::GUI gui(WINDOW_WIDTH, WINDOW_HEIGHT);
 
   while (true) {
-	if (gameScene.isUpdateScene()) {
-	  gameScene.GetEmbreeRenderScene(scene);
-	  delete renderer;
-	  renderer = new png::Renderer(scene);
-	  renderTarget.Init();
-	}
-	renderer->Draw(renderTarget,gameScene.GetCamera());
-	renderTarget.Update();
-	//gui.Update(renderTarget, (pScene::BaseScene*)&gameScene);
+  if (gameScene.isUpdateScene()) {
+    gameScene.GetEmbreeRenderScene(scene);
+    delete renderer;
+    renderer = new png::Renderer(scene);
+    renderTarget.Init();
+  }
+  renderer->Draw(renderTarget,gameScene.GetCamera());
+  renderTarget.Update();
+  //gui.Update(renderTarget, (pScene::BaseScene*)&gameScene);
   }
 
   return 0;
@@ -121,75 +121,72 @@ int main(int, char**) {
 
 constexpr int WINDOW_WIDTH = 1920;
 constexpr int WINDOW_HEIGHT = 1080;
-constexpr float TEXTURE_SIZE = 0.25f;
+#ifdef _DEBUG
+constexpr float TEXTURE_SIZE = 0.1f;
+#else
+constexpr float TEXTURE_SIZE = 0.5f;
+#endif
 constexpr int TEXTURE_WIDTH = WINDOW_WIDTH * TEXTURE_SIZE;
 constexpr int TEXTURE_HEIGHT = WINDOW_HEIGHT * TEXTURE_SIZE;
 
 void Main()
 {
-	// 背景を水色にする
-	Scene::SetBackground(ColorF(0.8, 0.9, 1.0));
-	Window::Resize(WINDOW_WIDTH, WINDOW_HEIGHT);
+  // 背景を水色にする
+  Scene::SetBackground(ColorF(0.8, 0.9, 1.0));
+  Window::Resize(WINDOW_WIDTH, WINDOW_HEIGHT);
 
-	// 大きさ 60 のフォントを用意
-	const Font font(60);
+  // 大きさ 60 のフォントを用意
+  const Font font(60);
 
-	//game scene
-	namespace pScene = png::scene;
-	png::EmbreeRenderScene scene;
-	//TestScene(scene);
-	//Init_NiceScene(scene);
-	pScene::GameScene gameScene(
-		TEXTURE_WIDTH, TEXTURE_HEIGHT,
-		png::Camera{
-		  0,
-		  png::vec3{+0.0f,+2.0f,-20.0f},
-		  png::vec3{+0.0f,+0.0f,+0.0f},
-		  0.5,
-		  png::vec3{+0.0f,+1.0f,+0.0f},
-		},
-		1,
-		png::tetris::Controller()
-		);
-	gameScene.InitEmbreeRenderScene(scene);
+  //game scene
+  namespace pScene = png::scene;
+  png::EmbreeRenderScene scene;
+  //TestScene(scene);
+  //Init_NiceScene(scene);
+  pScene::GameScene gameScene(
+    TEXTURE_WIDTH, TEXTURE_HEIGHT,
+    png::Camera{
+      0,
+      png::vec3{+0.0f,+5.0f,-25.0f},
+      png::vec3{+0.0f,-7.0f,+0.0f},
+      90.0,
+      png::vec3{+0.0f,+1.0f,+0.0f},
+    },
+    0.1f,
+    png::tetris::Controller()
+    );
 
-	//auto renderTarget = png::RenderTarget(TEXTURE_WIDTH, TEXTURE_HEIGHT);
-	auto renderer = new png::Renderer(TEXTURE_WIDTH, TEXTURE_HEIGHT, scene);
 
-	DynamicTexture texture(renderer->ResultImage());
+  DynamicTexture texture;
 
-	while (System::Update())
-	{
-		// テキストを画面の中心に描く
-		font(U"Hello, Siv3D!🐣{}"_fmt(1.0f / Scene::DeltaTime())).drawAt(Scene::Center(), Palette::Black);
+  while (System::Update())
+  {
+    gameScene.UpdateUpdateFuncTime();
 
-		// マウスカーソルに追従する半透明の赤い円を描く
-		Circle(Cursor::Pos(), 40).draw(ColorF(1, 0, 0, 0.5));
+    gameScene.Update();
+    texture.fill(gameScene.ComputeResultImage());
+    texture.scaled(1.0f / TEXTURE_SIZE).draw();
+    ClearPrint();
+    Print << U"{}FPS"_fmt(1.0f/Scene::DeltaTime());
 
-		gameScene.GetEmbreeRenderScene(scene);
-		//delete renderer;
-		//renderer = new png::Renderer(TEXTURE_WIDTH, TEXTURE_HEIGHT, scene);
-
-	  //renderer->Draw(gameScene.GetCamera());
-	  //texture.fill(renderer->ResultImage());
-	  //texture.scaled(1.0f/TEXTURE_SIZE).draw();
-
-	  //tetris
-		auto box = png::tetris::TetrisPosition2vec3(gameScene.GetBox());
-		float scale = 40;
-		float size = scale - 20;
-		for (int i = 0; i < box.size(); ++i) {
-			Rect(
-				(box[i].x - png::tetris::TETRIS_WIDTH / 2) * scale + WINDOW_WIDTH / 2
-				, -(box[i].y - png::tetris::TETRIS_HEIGHT / 2) * scale + WINDOW_HEIGHT / 2
-				, size
-				, size
-			).draw();
-		}
-		if (gameScene.isUpdateScene()) {
-			gameScene.UpdateDeltaTime();
-		}
-	}
+    //tetris kani
+    /*
+    auto box = png::tetris::TetrisPosition2vec3(gameScene.GetBox());
+    float scale = 40;
+    float size = scale - 20;
+    for (int i = 0; i < box.size(); ++i) {
+      Rect(
+        (box[i].x - png::tetris::TETRIS_WIDTH / 2) * scale + WINDOW_WIDTH / 2
+        , -(box[i].y - png::tetris::TETRIS_HEIGHT / 2) * scale + WINDOW_HEIGHT / 2
+        , size
+        , size
+      ).draw();
+    }
+    */
+    if (gameScene.isUpdateScene()) {
+      gameScene.UpdateDeltaTime();
+    }
+  }
 }
 
 //

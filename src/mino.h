@@ -28,12 +28,14 @@ namespace png {
 
       std::vector<TetrisPosition> GetPosi() const;
 
+      Material* GetMaterial();
       void Move(TetrisPosition movingPosi);
       void RotateClockwise();
       void RotateCounterClockwise();
       bool Movable(const Field& field, TetrisPosition movingPosi) const;
       bool Rotatable(const Field& field, bool isClockwise) const;
     private:
+      Material* mat;
       std::vector<TetrisPosition> blockLocalPosi;
       TetrisPosition posi;
       int minoType;

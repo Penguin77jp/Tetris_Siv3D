@@ -7,6 +7,7 @@
 #include <numbers>
 #include <cmath>
 #include <memory>
+#include <fstream>
 
 //namespace {
 //  constexpr float FLOAT_INFINITY = std::numeric_limits<float>::max();
@@ -100,7 +101,7 @@ png::vec3 png::Renderer::PathTracing(RTCRayHit& rayhit, int depth, Random& rnd) 
 
   //no hit
   if (rayhit.hit.geomID == RTC_INVALID_GEOMETRY_ID) {
-    return scene.sceneLight.GetColor(vec3{ rayhit.ray.dir_x,rayhit.ray.dir_y ,rayhit.ray.dir_z });
+    return scene.sceneLight->GetColor(vec3{ rayhit.ray.dir_x,rayhit.ray.dir_y ,rayhit.ray.dir_z });
   }
 
   //next
@@ -160,7 +161,7 @@ png::vec3 png::Renderer::LambertDiffuse(RTCRayHit& rayhit) {
 
   //no hit
   if (rayhit.hit.geomID == RTC_INVALID_GEOMETRY_ID) {
-    return scene.sceneLight.GetColor(vec3{ rayhit.ray.dir_x,rayhit.ray.dir_y ,rayhit.ray.dir_z });
+    return scene.sceneLight->GetColor(vec3{ rayhit.ray.dir_x,rayhit.ray.dir_y ,rayhit.ray.dir_z });
   }
 
   return scene.GetMaterial(rayhit.hit.primID)->GetColor() * std::abs(vec3::Dot(vec3::Normalize(vec3(rayhit.ray.dir_x, rayhit.ray.dir_y, rayhit.ray.dir_z)), vec3::Normalize(vec3(rayhit.hit.Ng_x, rayhit.hit.Ng_y, rayhit.hit.Ng_z))));
@@ -171,8 +172,8 @@ void png::Renderer::Draw(const Camera& pram_cam) {
   constexpr float FLOAT_INFINITY = std::numeric_limits<float>::max();
   const int width = renderTarget.GetWidth();
   const int height = renderTarget.GetHeight();
-  const float fovx = pram_cam.fov;
-  const float fovy = pram_cam.fov * width / height;
+  const float fovx = std::cos((90.0f - pram_cam.fov / 2.0f) / 180 * std::numbers::pi);
+  const float fovy = fovx * height / width;
 
 #ifdef _DEBUG
 #else
@@ -194,7 +195,9 @@ void png::Renderer::Draw(const Camera& pram_cam) {
       vec3 l_camZ = pram_cam.l_camZ;
       png::vec3 color;
       for (int s = 0; s < superSampling; ++s) {
-        vec3 dir = vec3::Normalize(l_camX * fovx * (2.0f * (x + rnd.next01()) / width - 1.0f) + l_camY * fovy * (2.0f * (y + rnd.next01()) / height - 1.0f) + l_camZ);
+        vec3 dir = vec3::Normalize(l_camX * fovx * (2.0f * ((float)x + rnd.next01()) / width - 1.0f) +
+          l_camY * fovy * (2.0f * ((float)y + rnd.next01()) / height - 1.0f) +
+          l_camZ);
         rayhit.ray.dir_x = dir.x;
         rayhit.ray.dir_y = dir.y;
         rayhit.ray.dir_z = dir.z;
