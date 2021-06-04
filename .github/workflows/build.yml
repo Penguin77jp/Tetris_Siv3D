@@ -1,0 +1,144 @@
+name: build
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+env:
+  app-path: ./App
+  sln-name: Tetris
+
+jobs:
+#   build:
+#     name: MSBuild
+#     runs-on: windows-latest
+#     steps:
+#     - uses: actions/checkout@v1
+#       with:
+#         fetch-depth: 1
+
+#     - name: Setup MSBuild.exe
+#       uses: microsoft/setup-msbuild@v1.0.2
+
+#     # OpenSiv3D 0.4.3 セットアップ
+#     - name: Setup s3d
+#       run: |
+#         bitsadmin /transfer s3d-download "https://siv3d.jp/downloads/Siv3D/manual/0.4.3/OpenSiv3D_SDK(0.4.3).zip" "C:\OpenSiv3D_SDK(0.4.3).zip"
+#         Expand-Archive -Path "C:\OpenSiv3D_SDK(0.4.3).zip" -DestinationPath "C:"
+#       shell: powershell
+#     # ビルド
+#     - name: MSBuild
+#       run: msbuild ./${{env.sln-name}}.sln -p:Configuration=Release;Platform="x64"
+#       shell: cmd
+#       env:
+#         SIV3D_0_4_3: C:\OpenSiv3D_SDK(0.4.3)
+#     # パッケージング
+#     - name: package exe data
+#       run: |
+#         cd ${{env.app-path}}
+#         mkdir build
+#         cp ./${{env.sln-name}}.exe ./build
+#         cp ./embree3.dll ./build
+#         cp ./tbb12.dll ./build
+
+  setup-release:
+    name: Setup release
+    runs-on: ubuntu-latest
+    steps:
+    - name: Create release
+      id: create_release
+      uses: actions/create-release@v1.0.0
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: ${{ github.ref }}
+        release_name: Release ${{ github.ref }}
+        draft: false
+        prerelease: false
+
+    - name: Get url to upload to release from output
+      env:
+        url: ${{ steps.create_release.outputs.upload_url }}
+      run: |
+        mkdir artifact
+        echo $url > artifact/url.txt
+    - name: Upload artifact to share url with other jobs
+      uses: actions/upload-artifact@v1
+      with:
+        name: artifact
+        path: artifact/url.txt
+
+  build:
+    needs: setup-release
+    runs-on: windows-latest
+
+    steps:
+    - name: checkout
+      uses: actions/checkout@v1
+
+    - name: Setup MSBuild.exe
+      uses: microsoft/setup-msbuild@v1.0.2
+
+    # OpenSiv3D 0.4.3 セットアップ
+    - name: Setup s3d
+      run: |
+        bitsadmin /transfer s3d-download "https://siv3d.jp/downloads/Siv3D/manual/0.4.3/OpenSiv3D_SDK(0.4.3).zip" "C:\OpenSiv3D_SDK(0.4.3).zip"
+        Expand-Archive -Path "C:\OpenSiv3D_SDK(0.4.3).zip" -DestinationPath "C:"
+      shell: powershell
+    # ビルド
+    - name: MSBuild
+      run: msbuild ./${{env.sln-name}}.sln -p:Configuration=Release;Platform="x64"
+      shell: cmd
+      env:
+        SIV3D_0_4_3: C:\OpenSiv3D_SDK(0.4.3)
+    - uses: actions/upload-artifact@v2
+      with:
+        name: artifact
+        path: |
+          ${{env.app-path}}/${{env.sln-name}}.exe
+          ${{env.app-path}}/embree3.dll
+          ${{env.app-path}}/tbb12.dll
+    # パッケージング
+    # - name: package exe data
+    #   run: |
+    #     cd ${{env.app-path}}
+    #     mkdir build
+    #     cp ./${{env.sln-name}}.exe ./build
+    #     cp ./embree3.dll ./build
+    #     cp ./tbb12.dll ./build
+    #     powershell Compress-Archive ${{env.app-path}}/build release.zip
+
+  release-pkg:
+    name: Release package
+    needs: build
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Download artifact to get url to upload to release
+      uses: actions/download-artifact@v1
+      with:
+        name: artifact
+
+    - name: copy build data
+      run: |
+        mkdir dist
+        cp artifact/${{env.sln-name}}.exe ./dist
+        cp artifact/embree3.dll ./dist
+        cp artifact/tbb12.dll ./dist
+        zip -j -r release dist
+
+    - name: Get url to upload to release from artifact
+      id: get_url
+      run: |
+        url=$(cat artifact/url.txt)
+        echo "##[set-output name=upload_url;]$url"
+    - name: Upload release asset
+      uses: actions/upload-release-asset@v1.0.1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.get_url.outputs.upload_url }}
+        asset_path: release.zip
+        asset_name: release.zip
+        asset_content_type: application/zip
