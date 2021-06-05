@@ -83,7 +83,7 @@ jobs:
         repository: nothings/stb
         path: stb
     
-    -run: |
+    - run: |
         ls
         ls stb
 
