@@ -228,6 +228,19 @@ namespace png {
       deltaTime = std::chrono::system_clock::now();
     }
 
+    void DeleteLines(tetris::Field& grid, int y) {
+      for (int deleteLine = y; deleteLine < grid.size(); ++deleteLine) {
+        for (int x = 0; x < grid[0].size(); ++x) {
+          if (deleteLine != grid.size() - 1) {
+            grid[deleteLine][x] = grid[deleteLine + 1][x];
+          }
+          else {
+            grid[y][x] = NULL;
+          }
+        }
+      }
+    }
+
     void GameScene::Update() {
       if (handlingMino == NULL || controller.InputKeyDown() == 1 || isUpdateScene()) {
         {
@@ -257,25 +270,17 @@ namespace png {
                 }*/
 
                 //delete line
-                for (int y = 1; y < grid.size();) {
-                  int cell = 0;
-                  for (int x = 0; x < grid[0].size(); ++x) {
-                    if (grid[y][x] != NULL) cell++;
-                  }
-                  if (cell == grid[0].size()) {
+                {
+                  for (int y = 1; y < grid.size();) {
+                    int cell = 0;
                     for (int x = 0; x < grid[0].size(); ++x) {
-                      if (grid[y][x] != NULL) {
-                        grid[y][x] = NULL;
-                      }
-                      if (y == grid.size() - 1) {
-                        grid[y][x] == NULL;
-                      }
-                      else {
-                        grid[y][x] = grid[y + 1][x];
-                      }
+                      if (grid[y][x] != NULL) cell++;
                     }
+                    if (cell == grid[0].size()) {
+                      DeleteLines(grid,y);
+                    }
+                    else y++;
                   }
-                  else y++;
                 }
 
                 delete handlingMino;
